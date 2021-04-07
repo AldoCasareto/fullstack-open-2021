@@ -1,5 +1,15 @@
 const express = require('express');
 const app = express();
+const morgan = require('morgan');
+
+// app.use(morgan('tiny'));
+morgan.token('body', (req, res) => JSON.stringify(req.body));
+// app.use(morgan(':method :url :status :response-time ms :res[content-length] :res[header]'));
+app.use(
+  morgan(
+    ':method :url :status :req[content-length] - :response-time ms :body'
+  )
+);
 
 app.use(express.json());
 
@@ -76,6 +86,11 @@ app.delete('/api/persons/:id', (request, response) => {
   persons = persons.filter((person) => person.id !== id);
   response.status(204).end();
 });
+
+function logger(request, response, next) {
+  console.log('log');
+  next();
+}
 
 const PORT = 3001;
 app.listen(PORT, () => {
